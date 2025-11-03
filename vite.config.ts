@@ -23,4 +23,17 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true,
   },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['src/setupTests.ts'],
+    css: true,
+    include: ['src/__tests__/**/*.test.ts', 'src/__tests__/**/*.test.tsx'],
+    reporters: 'dot',
+    clearMocks: true,
+    restoreMocks: true,
+    hookTimeout: 10000,
+    testTimeout: 10000,
+    threads: false
+  }
 })
