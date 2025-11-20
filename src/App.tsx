@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet-async'
 import Layout from './components/Layout'
 import LandingPage from './pages/LandingPage'
 import FeaturesPage from './pages/FeaturesPage'
-import PricingPage from './pages/PricingPage'
 import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
 import LoginPage from './pages/auth/LoginPage'
@@ -43,7 +42,6 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<LandingPage />} />
           <Route path="features" element={<FeaturesPage />} />
-          <Route path="pricing" element={<PricingPage />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="contact" element={<ContactPage />} />
           <Route path="login" element={<LoginPage />} />
