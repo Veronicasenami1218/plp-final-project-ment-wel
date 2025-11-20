@@ -6,12 +6,12 @@ A beautiful, modern mental health platform built with React, TypeScript, and Tai
 
 ## ✨ Features
 
-- 🎨 **Beautiful UI** - Vibrant gradients and inspirational design
-- 🔒 **100% Anonymous** - Complete privacy and confidentiality
-- 👩‍⚕️ **Licensed Therapists** - Verified mental health professionals
-- 🌍 **Nigeria-focused** - Tailored for the Nigerian mental health landscape
-- 📱 **Responsive Design** - Works perfectly on all devices
-- 🚀 **Modern Tech Stack** - React 18, TypeScript, Tailwind CSS
+- **Beautiful UI** - Vibrant gradients and inspirational design
+- **100% Anonymous** - Complete privacy and confidentiality
+- **Licensed Therapists** - Verified mental health professionals
+- **Nigeria-focused** - Tailored for the Nigerian mental health landscape
+- **Responsive Design** - Works perfectly on all devices
+- **Modern Tech Stack** - React 18, TypeScript, Tailwind CSS
 
 ## Prerequisites
 - Node.js 18+ and npm 9+
