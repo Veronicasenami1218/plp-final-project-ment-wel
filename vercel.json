@@ -2,7 +2,7 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "installCommand": "npm install",
+  "installCommand": "npm ci",
   "devCommand": "npm run dev",
   "rewrites": [
     {
@@ -19,5 +19,10 @@
         { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "app/api/**/*.js": {
+      "runtime": "@vercel/node"
+    }
+  }
 }
