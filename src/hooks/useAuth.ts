@@ -1,12 +1,5 @@
 import { useState, useEffect } from 'react'
-import authService from '../services/auth.service'
-
-interface User {
-  id: string
-  email: string
-  name: string
-  avatar?: string
-}
+import authService, { type User, type RegisterData } from '../services/auth.service'
 
 interface AuthState {
   user: User | null
@@ -46,7 +39,7 @@ export const useAuth = () => {
     setAuthState(prev => ({ ...prev, loading: true, error: null }))
     
     try {
-      const user = await authService.login(email, password)
+      const user = await authService.login({ email, password })
       setAuthState({
         user,
         loading: false,
@@ -64,11 +57,11 @@ export const useAuth = () => {
     }
   }
 
-  const register = async (email: string, password: string, name: string) => {
+  const register = async (registerData: RegisterData) => {
     setAuthState(prev => ({ ...prev, loading: true, error: null }))
     
     try {
-      const user = await authService.register(email, password, name)
+      const user = await authService.register(registerData)
       setAuthState({
         user,
         loading: false,

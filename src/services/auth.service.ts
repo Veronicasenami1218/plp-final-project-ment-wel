@@ -6,62 +6,146 @@ export interface LoginCredentials {
 }
 
 export interface RegisterData {
-  first_name: string;
-  last_name: string;
   email: string;
   password: string;
-  phone?: string;
-  date_of_birth?: string;
-  gender?: string;
-  country?: string;
-  state?: string;
-  city?: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  gender: 'male' | 'female' | 'other';
+  country: string;
+  phoneNumber?: string;
+  acceptTerms: boolean;
+}
+
+export interface User {
+  _id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  phoneNumber?: string;
+  isPhoneVerified: boolean;
+  isEmailVerified: boolean;
+  status: string;
+  dateOfBirth: string;
+  gender: string;
+  country: string;
+  acceptedTermsAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AuthTokens {
+  access: {
+    token: string;
+    expiresIn: string;
+  };
+  refresh: {
+    token: string;
+    expiresIn: string;
+  };
 }
 
 export interface AuthResponse {
-  token: string;
-  user: {
-    id: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-    role: string;
+  success: boolean;
+  data: {
+    user: User;
+    tokens: AuthTokens;
   };
 }
 
 class AuthService {
-  async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await apiClient.post('/auth/login', credentials);
-    if (response.data.token) {
-      localStorage.setItem('authToken', response.data.token);
+  async login(credentials: LoginCredentials): Promise<User> {
+    try {
+      const response = await apiClient.post<AuthResponse>('/v1/auth/login', credentials);
+      
+      if (response.status === 200 && response.data.success) {
+        const { user, tokens } = response.data.data;
+        
+        // Store tokens and user data
+        localStorage.setItem('accessToken', tokens.access.token);
+        localStorage.setItem('refreshToken', tokens.refresh.token);
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        return user;
+      } else {
+        throw new Error('Login failed');
+      }
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Login failed';
+      throw new Error(message);
     }
-    return response.data;
   }
 
-  async register(data: RegisterData): Promise<AuthResponse> {
-    const response = await apiClient.post('/auth/register', data);
-    if (response.data.token) {
-      localStorage.setItem('authToken', response.data.token);
+  async register(data: RegisterData): Promise<User> {
+    try {
+      const response = await apiClient.post<AuthResponse>('/v1/auth/register', data);
+      
+      if (response.status === 201 && response.data.success) {
+        const { user, tokens } = response.data.data;
+        
+        // Store tokens and user data
+        localStorage.setItem('accessToken', tokens.access.token);
+        localStorage.setItem('refreshToken', tokens.refresh.token);
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        return user;
+      } else {
+        throw new Error('Registration failed');
+      }
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Registration failed';
+      throw new Error(message);
     }
-    return response.data;
   }
 
   async logout(): Promise<void> {
-    localStorage.removeItem('authToken');
-    await apiClient.post('/auth/logout');
+    try {
+      // Optional: Call logout endpoint to invalidate tokens on server
+      const refreshToken = localStorage.getItem('refreshToken');
+      if (refreshToken) {
+        await apiClient.post('/v1/auth/logout', { refreshToken });
+      }
+    } catch (error) {
+      // Continue with logout even if server call fails
+      console.warn('Logout API call failed:', error);
+    } finally {
+      // Always clear local storage
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+    }
   }
 
-  async getCurrentUser() {
-    const response = await apiClient.get('/auth/me');
-    return response.data;
+  async getCurrentUser(): Promise<User | null> {
+    const token = localStorage.getItem('accessToken');
+    const userStr = localStorage.getItem('user');
+    
+    if (!token || !userStr) {
+      return null;
+    }
+    
+    try {
+      return JSON.parse(userStr);
+    } catch {
+      return null;
+    }
   }
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('authToken');
+    return !!localStorage.getItem('accessToken');
   }
 
   getToken(): string | null {
-    return localStorage.getItem('authToken');
+    return localStorage.getItem('accessToken');
+  }
+
+  getAccessToken(): string | null {
+    return localStorage.getItem('accessToken');
+  }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
   }
 }
 

@@ -3,14 +3,21 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff, Users, Shield, CheckCircle } from 'lucide-react';
-import authService, { RegisterData } from '../../services/auth.service';
+import { useAuth } from '../../hooks/useAuth';
+import { RegisterData } from '../../services/auth.service';
+
+interface FormData extends RegisterData {
+  confirmPassword: string;
+  terms: boolean;
+}
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const { register: registerUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState({ score: 0, text: '' });
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<RegisterData & { confirm_password: string; terms: boolean }>();
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>();
 
   const password = watch('password');
 
@@ -30,20 +37,34 @@ export default function RegisterPage() {
     setPasswordStrength(calculatePasswordStrength(e.target.value));
   };
 
-  const onSubmit = async (data: RegisterData & { confirm_password: string; terms: boolean }) => {
-    if (data.password !== data.confirm_password) {
+  const onSubmit = async (data: FormData) => {
+    if (data.password !== data.confirmPassword) {
       toast.error('Passwords do not match');
       return;
     }
 
     setIsLoading(true);
     try {
-      const { confirm_password, terms, ...registerData } = data;
-      await authService.register(registerData);
-      toast.success('Account created successfully!');
+      const { confirmPassword, terms, ...registerData } = data;
+      
+      // Transform the data to match backend API
+      const backendData: RegisterData = {
+        email: registerData.email,
+        password: registerData.password,
+        firstName: registerData.firstName,
+        lastName: registerData.lastName,
+        dateOfBirth: registerData.dateOfBirth,
+        gender: registerData.gender,
+        country: registerData.country,
+        phoneNumber: registerData.phoneNumber,
+        acceptTerms: terms
+      };
+
+      await registerUser(backendData);
+      toast.success('Account created successfully! Welcome to MentWel!');
       navigate('/dashboard');
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Registration failed. Please try again.');
+      toast.error(error.message || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -63,31 +84,31 @@ export default function RegisterPage() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="first_name" className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label htmlFor="firstName" className="block text-sm font-medium text-neutral-700 mb-2">
                     First Name
                   </label>
                   <input
                     type="text"
-                    id="first_name"
-                    {...register('first_name', { required: 'First name is required' })}
-                    className="w-full px-4 py-3 border-2 border-neutral-200 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all"
+                    id="firstName"
+                    {...register('firstName', { required: 'First name is required' })}
+                    className="w-full px-4 py-3 border-2 border-neutral-200 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all"
                     placeholder="First name"
                   />
-                  {errors.first_name && <p className="mt-1 text-xs text-red-500">⚠ {errors.first_name.message}</p>}
+                  {errors.firstName && <p className="mt-1 text-xs text-red-500">⚠ {errors.firstName.message}</p>}
                 </div>
 
                 <div>
-                  <label htmlFor="last_name" className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label htmlFor="lastName" className="block text-sm font-medium text-neutral-700 mb-2">
                     Last Name
                   </label>
                   <input
                     type="text"
-                    id="last_name"
-                    {...register('last_name', { required: 'Last name is required' })}
-                    className="w-full px-4 py-3 border-2 border-neutral-200 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all"
+                    id="lastName"
+                    {...register('lastName', { required: 'Last name is required' })}
+                    className="w-full px-4 py-3 border-2 border-neutral-200 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all"
                     placeholder="Last name"
                   />
-                  {errors.last_name && <p className="mt-1 text-xs text-red-500">⚠ {errors.last_name.message}</p>}
+                  {errors.lastName && <p className="mt-1 text-xs text-red-500">⚠ {errors.lastName.message}</p>}
                 </div>
               </div>
 
@@ -98,37 +119,46 @@ export default function RegisterPage() {
                 <input
                   type="email"
                   id="email"
-                  {...register('email', { required: 'Email is required' })}
-                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all"
+                  {...register('email', { 
+                    required: 'Email is required',
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: 'Please enter a valid email address'
+                    }
+                  })}
+                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all"
                   placeholder="Enter your email"
                 />
                 {errors.email && <p className="mt-1 text-sm text-red-500">⚠ {errors.email.message}</p>}
               </div>
 
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-neutral-700 mb-2">
+                <label htmlFor="phoneNumber" className="block text-sm font-medium text-neutral-700 mb-2">
                   Phone Number (Optional)
                 </label>
                 <input
                   type="tel"
-                  id="phone"
-                  {...register('phone')}
-                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all"
+                  id="phoneNumber"
+                  {...register('phoneNumber')}
+                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all"
                   placeholder="+234 XXX XXX XXXX"
                 />
               </div>
 
+
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="date_of_birth" className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label htmlFor="dateOfBirth" className="block text-sm font-medium text-neutral-700 mb-2">
                     Date of Birth
                   </label>
                   <input
                     type="date"
-                    id="date_of_birth"
-                    {...register('date_of_birth')}
-                    className="w-full px-4 py-3 border-2 border-neutral-200 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all"
+                    id="dateOfBirth"
+                    {...register('dateOfBirth', { required: 'Date of birth is required' })}
+                    className="w-full px-4 py-3 border-2 border-neutral-200 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all"
                   />
+                  {errors.dateOfBirth && <p className="mt-1 text-xs text-red-500">⚠ {errors.dateOfBirth.message}</p>}
                 </div>
 
                 <div>
@@ -137,15 +167,15 @@ export default function RegisterPage() {
                   </label>
                   <select
                     id="gender"
-                    {...register('gender')}
-                    className="w-full px-4 py-3 border-2 border-neutral-200 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all"
+                    {...register('gender', { required: 'Please select your gender' })}
+                    className="w-full px-4 py-3 border-2 border-neutral-200 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all"
                   >
                     <option value="">Select</option>
-                    <option value="M">Male</option>
-                    <option value="F">Female</option>
-                    <option value="O">Other</option>
-                    <option value="P">Prefer not to say</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
                   </select>
+                  {errors.gender && <p className="mt-1 text-xs text-red-500">⚠ {errors.gender.message}</p>}
                 </div>
               </div>
 
