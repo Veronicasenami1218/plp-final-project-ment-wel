@@ -7,7 +7,6 @@ import { useAuth } from '../../hooks/useAuth';
 import { RegisterData } from '../../services/auth.service';
 
 interface FormData extends RegisterData {
-  confirmPassword: string;
   terms: boolean;
 }
 
@@ -45,18 +44,11 @@ export default function RegisterPage() {
 
     setIsLoading(true);
     try {
-      const { confirmPassword, terms, ...registerData } = data;
+      const { terms, ...registerData } = data;
       
       // Transform the data to match backend API
       const backendData: RegisterData = {
-        email: registerData.email,
-        password: registerData.password,
-        firstName: registerData.firstName,
-        lastName: registerData.lastName,
-        dateOfBirth: registerData.dateOfBirth,
-        gender: registerData.gender,
-        country: registerData.country,
-        phoneNumber: registerData.phoneNumber,
+        ...registerData,
         acceptTerms: terms
       };
 
