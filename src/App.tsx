@@ -39,16 +39,28 @@ function App() {
       </Helmet>
 
       <Routes>
-        {/* Public Routes */}
+        {/* Public Routes - Only Landing, Login, Register */}
         <Route path="/" element={<Layout />}>
           <Route index element={<LandingPage />} />
-          <Route path="features" element={<FeaturesPage />} />
-          <Route path="about" element={<AboutPage />} />
-          <Route path="contact" element={<ContactPage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
           
-          {/* Protected Routes */}
+          {/* Protected Routes - Require Authentication */}
+          <Route path="features" element={
+            <ProtectedRoute>
+              <FeaturesPage />
+            </ProtectedRoute>
+          } />
+          <Route path="about" element={
+            <ProtectedRoute>
+              <AboutPage />
+            </ProtectedRoute>
+          } />
+          <Route path="contact" element={
+            <ProtectedRoute>
+              <ContactPage />
+            </ProtectedRoute>
+          } />
           <Route path="dashboard" element={
             <ProtectedRoute>
               <DashboardPage />
