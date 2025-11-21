@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import Layout from './components/Layout'
+import ProtectedRoute from './components/ProtectedRoute'
 import LandingPage from './pages/LandingPage'
 import FeaturesPage from './pages/FeaturesPage'
 import AboutPage from './pages/AboutPage'
@@ -46,14 +47,38 @@ function App() {
           <Route path="contact" element={<ContactPage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
-          <Route path="therapists" element={<TherapistDirectoryPage />} />
-          <Route path="therapists/:id" element={<TherapistDetailPage />} />
           
           {/* Protected Routes */}
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="sessions" element={<SessionBookingPage />} />
-          <Route path="mood" element={<MoodTrackingPage />} />
-          <Route path="profile" element={<ProfilePage />} />
+          <Route path="dashboard" element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          } />
+          <Route path="therapists" element={
+            <ProtectedRoute>
+              <TherapistDirectoryPage />
+            </ProtectedRoute>
+          } />
+          <Route path="therapists/:id" element={
+            <ProtectedRoute>
+              <TherapistDetailPage />
+            </ProtectedRoute>
+          } />
+          <Route path="sessions" element={
+            <ProtectedRoute>
+              <SessionBookingPage />
+            </ProtectedRoute>
+          } />
+          <Route path="mood" element={
+            <ProtectedRoute>
+              <MoodTrackingPage />
+            </ProtectedRoute>
+          } />
+          <Route path="profile" element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          } />
         </Route>
         
         {/* 404 Page */}
