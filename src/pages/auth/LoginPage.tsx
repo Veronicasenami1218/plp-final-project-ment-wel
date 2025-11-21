@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff, Shield, CheckCircle, Clock } from 'lucide-react';
@@ -13,16 +13,20 @@ interface LoginFormData {
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
+
+  // Get the intended destination from location state, default to dashboard
+  const from = location.state?.from?.pathname || '/dashboard';
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
       await authService.login({ email: data.email, password: data.password });
       toast.success('Welcome back!');
-      navigate('/dashboard');
+      navigate(from, { replace: true });
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {

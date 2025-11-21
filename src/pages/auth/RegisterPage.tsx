@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff, Users, Shield, CheckCircle } from 'lucide-react';
@@ -12,11 +12,15 @@ interface FormData extends RegisterData {
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { register: registerUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState({ score: 0, text: '' });
   const { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>();
+
+  // Get the intended destination from location state, default to dashboard
+  const from = location.state?.from?.pathname || '/dashboard';
 
   const password = watch('password');
 
@@ -54,7 +58,7 @@ export default function RegisterPage() {
 
       await registerUser(backendData);
       toast.success('Account created successfully! Welcome to MentWel!');
-      navigate('/dashboard');
+      navigate(from, { replace: true });
     } catch (error: any) {
       toast.error(error.message || 'Registration failed. Please try again.');
     } finally {
@@ -235,17 +239,17 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label htmlFor="confirm_password" className="block text-sm font-medium text-neutral-700 mb-2">
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 mb-2">
                   Confirm Password
                 </label>
                 <input
                   type="password"
-                  id="confirm_password"
-                  {...register('confirm_password', { required: 'Please confirm your password' })}
-                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-lg focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all"
+                  id="confirmPassword"
+                  {...register('confirmPassword', { required: 'Please confirm your password' })}
+                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all"
                   placeholder="Confirm your password"
                 />
-                {errors.confirm_password && <p className="mt-1 text-sm text-red-500">⚠ {errors.confirm_password.message}</p>}
+                {errors.confirmPassword && <p className="mt-1 text-sm text-red-500">⚠ {errors.confirmPassword.message}</p>}
               </div>
 
               <div>
