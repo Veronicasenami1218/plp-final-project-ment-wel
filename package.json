@@ -17,6 +17,7 @@
     "lint:fix": "eslint . --ext ts,tsx --fix"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.57.0",
     "@supabase/supabase-js": "^2.38.0",
     "axios": "^1.6.0",
     "clsx": "^2.0.0",
