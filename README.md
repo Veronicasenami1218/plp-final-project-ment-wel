@@ -1,8 +1,12 @@
 # 🌟 MentWel - Mental Health Platform
 
-> **Live Demo:** [https://plp-ment-wel.netlify.app/](https://plp-ment-wel.netlify.app/)
-
 A beautiful, modern mental health platform built with React, TypeScript, and Tailwind CSS. Connect with licensed therapists across Nigeria for anonymous, secure, and flexible therapy sessions.
+
+## 🌐 Live Demo
+
+- **Frontend:** [https://plp-ment-wel.netlify.app/](https://plp-ment-wel.netlify.app/)
+- **Backend API:** [https://plp-final-project-backend.onrender.com](https://plp-final-project-backend.onrender.com)
+- **API Documentation:** [https://plp-final-project-backend.onrender.com/api/v1/docs](https://plp-final-project-backend.onrender.com/api/v1/docs)
 
 ## ✨ Features
 
