@@ -8,6 +8,7 @@ import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
+import SSOCallback from './pages/auth/SSOCallback.tsx'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import TherapistDirectoryPage from './pages/therapists/TherapistDirectoryPage'
 import TherapistDetailPage from './pages/therapists/TherapistDetailPage'
@@ -44,6 +45,7 @@ function App() {
           <Route index element={<LandingPage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
+          <Route path="sso-callback" element={<SSOCallback />} />
           
           {/* Protected Routes - Require Authentication */}
           <Route path="features" element={
